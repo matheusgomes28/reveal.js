@@ -9,15 +9,191 @@
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
 		<link rel="stylesheet" href="dist/theme/black.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 		<!-- Theme used for syntax highlighted code -->
-		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/a11y-dark.min.css" integrity="sha512-Vj6gPCk8EZlqnoveEyuGyYaWZ1+jyjMPg8g4shwyyNlRQl6d3L9At02ZHQr5K6s5duZl/+YKMnM3/8pDhoUphg==" crossorigin="anonymous" referrerpolicy="no-referrer" id="highlight-theme" />
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+		Reveal.initialize({
+			plugins: [ RevealHighlight ]
+		});
+		</script>
+
+		<style>
+			.reveal i.fa { font-family:FontAwesome; font-style: normal; }
+		</style>
 	</head>
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+				<section>
+					<h3>Intro To CI</h3>
+					<h5>Automating Development Tasks</h5>
+					<img src="assets/pipelines.jpg" class="r-stretch">
+				</section>
+
+				<section>
+					<section data-auto-animate>
+						<h3>What is CI/CD? How Does It Help You?</h3>
+						<ul class="fade-out">
+							<li class="fragment">Makes the development process easier</li>
+							<li class="fragment">Automating development tasks</li>
+							<ul>
+								<li class="fragment">Integrate changes automatically</li>
+								<li class="fragment">Build automatically</li>
+								<li class="fragment">Test your project automatically</li>
+								<li class="fragment" style="color: #BB0000">Release automatically</li>
+								<li class="fragment">...</li>
+							</ul>
+						</ul>
+					</section>
+					<section data-auto-animate>
+						<h3>What is CI/CD? How Does It Help You?</h3>
+						<img src="assets/azure-run.png" class="fade-in">
+					</section>
+				</section>
+
+				<section>
+					<section data-auto-animate>
+						<h3>Different Provider Types for CI/CD</h3>
+						<table class="reveal">
+							<thead>
+								<tr>
+									<th style="text-align: center;">On Premise</th>
+									<th style="text-align: center;">Cloud Managed / SaaS</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td style="text-align: center;"><i class="fa fa-solid fa-computer"></i></td>
+									<td style="text-align: center;"><i class="fa fa-solid fa-cloud"></i></td>
+								</tr>
+								<tr>
+									<td>A physical machine that you setup</td>
+									<td>Managed by a cloud service provider or SaaS</td>
+								</tr>
+							</tbody>
+						</table>
+					</section>
+					<section data-auto-animate>
+						<h3>Different Provider Types for CI/CD</h3>
+						<table>
+							<thead>
+								<tr>
+									<th>Features</th>
+									<th>Jenkins</th>
+									<th>CircleCI</th>
+									<th>Azure</th>
+									<th>Gitlab</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<th>Self-Hosting</th>
+									<td><i class="fa fa-solid fa-check"></i></td>
+									<td><i class="fa fa-solid fa-check"></i></td>
+									<td><i class="fa fa-solid fa-check"></i></td>
+									<td><i class="fa fa-solid fa-check"></i></td>
+								</tr>
+								<tr>
+									<th>Pipeline Configuration</th>
+									<td>Groovy</td>
+									<td>Yaml</td>
+									<td>Yaml/UI</td>
+									<td>Yaml</td>
+								</tr>
+								<tr>
+									<th>Free Minutes</th>
+									<td><i class="fa fa-solid fa-infinity"></i></td>
+									<td>6000</td>
+									<td>1800</td>
+									<td>50000</td>
+								</tr>
+								<tr>
+									<th>Open Source</th>
+									<td><i class="fa fa-solid fa-check"></i></td>
+									<td><i class="fa fa-solid fa-x"></i></td>
+									<td><i class="fa fa-solid fa-x"></i></td>
+									<td><i class="fa fa-solid fa-x"></i></td>
+								</tr>
+							</tbody>
+						</table>
+					</section>
+				</section>
+
+				<section>
+					<h3>Pipeline Configuration (Azure)</h3>
+					<pre>
+						<code class="yaml" data-trim data-line-numbers>stages:
+- stage: failfast
+displayName: FailFast Checks
+jobs:
+- job: failfast
+displayName: Failfast Scripts
+container: 'ubuntu18.04-gcc11-conan2-doxygen1.9.6'
+continueOnError: false
+steps:
+- bash: scripts/shellcheck.sh
+displayName: Linting Shell
+workingDirectory: $(Build.SourcesDirectory)
+- bash: scripts/cpp-lint.sh
+displayName: Linting CPP files
+workingDirectory: $(Build.SourcesDirectory)
+						</code>
+					</pre>
+				</section>
+				<section>
+					<h3>Pipeline Configuration (CircleCI)</h3>
+					<pre>
+						<code class="yaml" data-line-numbers># Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
+jobs:
+build:
+# Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
+# See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+docker:
+	- image: mattgomes28/cpp-ubuntu:0.2
+environment:
+	CONAN_SYSREQUIRES_MODE: enabled
+# Add steps to the job
+# See: https://circleci.com/docs/2.0/configuration-reference/#steps
+steps:
+	- checkout
+	- run:
+		name: "Getting CMake & Conan version"
+		command: |
+		cmake --version
+		conan --version
+						</code>
+					</pre>
+				</section>
+				<section>
+					<h3>Pipeline Configuration (Jenkins)</h3>
+					<pre>
+						<code class="grovy" data-line-numbers>pipeline {
+agent any
+options {
+	// Timeout counter starts AFTER agent is allocated
+	timeout(time: 1, unit: 'SECONDS')
+}
+stages {
+	stage('Example') {
+		steps {
+			echo 'Hello World'
+		}
+	}
+}
+}
+						</code>
+					</pre>
+				</section>
+
+				<section>
+					<h3>Jargon - Pipeline Components</h3>
+					<img src="assets/azure-lingo.jpg">
+				</section>
+
 			</div>
 		</div>
 
